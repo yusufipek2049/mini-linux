@@ -5,6 +5,10 @@ INITRD=${1:-build/images/initramfs.cpio.gz}
 ARCH=${ARCH:-x86_64}
 KERNEL=${KERNEL:-}
 
+log() {
+    printf '[qemu-run] %s\n' "$*" >&2
+}
+
 [ -r "$INITRD" ] || {
     echo "initramfs not found: $INITRD" >&2
     exit 1
@@ -21,6 +25,10 @@ fi
     exit 1
 }
 
+log "Kernel imajı hazır: $KERNEL"
+log "Initramfs hazır: $INITRD"
+log "Hedef mimari: $ARCH"
+
 case "$ARCH" in
     aarch64|arm64)
         QEMU=qemu-system-aarch64
@@ -28,6 +36,8 @@ case "$ARCH" in
             echo "$QEMU not found" >&2
             exit 1
         }
+        log "ARM64 QEMU başlatılıyor. Konsol: ttyAMA0, makine: virt, CPU: cortex-a53"
+        log "Çıkmak için Ctrl+A ardından X kullan."
         exec "$QEMU" \
             -M virt \
             -cpu cortex-a53 \
@@ -44,6 +54,8 @@ case "$ARCH" in
             echo "$QEMU not found" >&2
             exit 1
         }
+        log "x86_64 QEMU başlatılıyor. Konsol: ttyS0"
+        log "Çıkmak için Ctrl+A ardından X kullan."
         exec "$QEMU" \
             -m 512M \
             -kernel "$KERNEL" \
@@ -57,4 +69,3 @@ case "$ARCH" in
         exit 2
         ;;
 esac
-

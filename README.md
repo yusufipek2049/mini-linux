@@ -160,6 +160,18 @@ Başarısız açılış ve rollback senaryosunu denemek için:
 
 Bu akışta önce aktif slot `a` olur. Güncelleme pasif slot olan `b` üzerine hazırlanır. Başarılı boot onaylanırsa aktif slot `b` olur. Başarısız boot senaryosunda ise sistem eski slota geri döner.
 
+Simülasyon scripti artık kısa log satırları da üretir. Bu loglar özellikle hangi slotun aktif olduğunu, yeni imajın hangi slota hazırlandığını ve rollback kararının neden verildiğini takip etmek için eklendi. Çıktılar bilinçli olarak sade tutuldu; amaç gerçek bir cihazda seri konsoldan bakan kişinin ne olduğunu hızlıca anlamasıdır.
+
+Örnek:
+
+```text
+[mini-update] Aktif slot 'a'. Yeni imaj pasif slot 'b' üzerine hazırlanıyor.
+[mini-update] SHA256 özeti kaydedildi: ...
+Güncelleme adayı simüle edilen 'b' slotuna kuruldu.
+```
+
+QEMU başlatma scripti de benzer şekilde kernel, initramfs ve hedef mimariyi çalıştırmadan önce yazar. Böylece yanlış kernel veya yanlış mimari kullanıldığında hata ayıklamak daha kolay olur.
+
 ## Proje Yapısı
 
 ```text
