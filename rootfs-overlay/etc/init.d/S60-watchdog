@@ -1,0 +1,13 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        if [ -c /dev/watchdog ]; then
+            watchdog -t 10 /dev/watchdog 2>/dev/null || true
+            logger -t watchdog "watchdog enabled"
+        fi
+        ;;
+    stop)
+        ;;
+esac
+

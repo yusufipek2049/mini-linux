@@ -1,0 +1,14 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+echo "mini-linux: starting init sequence"
+
+for script in /etc/init.d/S*; do
+    [ -x "$script" ] || continue
+    echo "mini-linux: running $script"
+    "$script" start
+done
+
+echo "mini-linux: boot complete"
+

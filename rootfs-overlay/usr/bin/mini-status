@@ -1,0 +1,17 @@
+#!/bin/sh
+
+MODE=${1:-}
+CONFIG=/data/config/device.conf
+[ -r "$CONFIG" ] && . "$CONFIG"
+
+echo "device=${DEVICE_NAME:-mini-linux}"
+echo "kernel=$(uname -r 2>/dev/null || echo unknown)"
+echo "arch=$(uname -m 2>/dev/null || echo unknown)"
+echo "rootfs=read-only squashfs"
+echo "data=/data writable ext4"
+echo "active_slot=${ACTIVE_SLOT:-unknown}"
+
+if [ "$MODE" = "--boot" ]; then
+    echo "boot_time=$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo unknown)"
+fi
+

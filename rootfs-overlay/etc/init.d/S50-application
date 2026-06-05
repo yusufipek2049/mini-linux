@@ -1,0 +1,14 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        mkdir -p /run
+        /usr/bin/mini-status --boot > /run/mini-status.txt 2>/dev/null || true
+        touch /run/mini-linux.ready
+        logger -t app "mini-linux application placeholder started"
+        ;;
+    stop)
+        rm -f /run/mini-linux.ready
+        ;;
+esac
+

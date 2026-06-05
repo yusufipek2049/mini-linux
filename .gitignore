@@ -1,0 +1,8 @@
+build/
+mini_linux_dagitimi_tasarimi.md
+github_push_adimlari.txt
+*.img
+*.ext4
+*.squashfs
+*.cpio
+*.cpio.gz

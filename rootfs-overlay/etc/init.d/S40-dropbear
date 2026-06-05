@@ -1,0 +1,24 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        if [ -x /usr/sbin/dropbear ]; then
+            mkdir -p /data/dropbear /data/dropbear/ssh
+            [ -f /data/config/authorized_keys ] && cp /data/config/authorized_keys /data/dropbear/ssh/authorized_keys
+
+            key_args=
+            for key in /data/dropbear/dropbear_*_host_key; do
+                [ -f "$key" ] || continue
+                key_args="$key_args -r $key"
+            done
+
+            /usr/sbin/dropbear -E -p 22 $key_args
+            logger -t dropbear "ssh service started"
+        else
+            logger -t dropbear "dropbear binary not installed; ssh disabled"
+        fi
+        ;;
+    stop)
+        killall dropbear 2>/dev/null || true
+        ;;
+esac

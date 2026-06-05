@@ -1,0 +1,85 @@
+#!/bin/sh
+
+STATE=/data/config/update-state
+BOOTLIMIT=3
+
+init_state() {
+    mkdir -p /data/config /data/log
+    if [ ! -f "$STATE" ]; then
+        {
+            echo "active_slot=a"
+            echo "pending_slot="
+            echo "bootcount=0"
+            echo "last_result=initialized"
+        } > "$STATE"
+    fi
+}
+
+load_state() {
+    init_state
+    . "$STATE"
+}
+
+save_state() {
+    {
+        echo "active_slot=$active_slot"
+        echo "pending_slot=$pending_slot"
+        echo "bootcount=$bootcount"
+        echo "last_result=$last_result"
+    } > "$STATE"
+}
+
+inactive_slot() {
+    if [ "$active_slot" = "a" ]; then
+        echo "b"
+    else
+        echo "a"
+    fi
+}
+
+case "$1" in
+    status)
+        load_state
+        cat "$STATE"
+        ;;
+    stage)
+        IMAGE=$2
+        [ -r "$IMAGE" ] || {
+            echo "image not readable: $IMAGE" >&2
+            exit 1
+        }
+        load_state
+        pending_slot=$(inactive_slot)
+        bootcount=0
+        last_result="staged_$pending_slot"
+        sha256sum "$IMAGE" > "/data/log/staged-rootfs-$pending_slot.sha256" 2>/dev/null || true
+        save_state
+        echo "staged image for slot $pending_slot"
+        echo "real target write should be handled by swupdate/RAUC or a verified dd flow"
+        ;;
+    mark-good)
+        load_state
+        [ -n "$pending_slot" ] && active_slot="$pending_slot"
+        pending_slot=
+        bootcount=0
+        last_result=confirmed
+        save_state
+        ;;
+    mark-bad)
+        load_state
+        bootcount=$((bootcount + 1))
+        if [ "$bootcount" -ge "$BOOTLIMIT" ]; then
+            pending_slot=
+            bootcount=0
+            last_result=rollback
+        else
+            last_result="boot_failed_$bootcount"
+        fi
+        save_state
+        ;;
+    *)
+        echo "usage: mini-update {status|stage IMAGE|mark-good|mark-bad}" >&2
+        exit 2
+        ;;
+esac
+

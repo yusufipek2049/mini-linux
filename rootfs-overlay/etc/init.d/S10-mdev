@@ -1,0 +1,11 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        [ -d /proc/sys/kernel ] && echo /sbin/mdev > /proc/sys/kernel/hotplug 2>/dev/null || true
+        /sbin/mdev -s 2>/dev/null || true
+        ;;
+    stop)
+        ;;
+esac
+

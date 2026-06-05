@@ -1,0 +1,19 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        mkdir -p /run/log /data/log
+        syslogd -O /run/log/messages -s 128 2>/dev/null || true
+        klogd 2>/dev/null || true
+        logger -t boot "logging started"
+        ;;
+    stop)
+        logger -t shutdown "syncing logs"
+        if [ -f /run/log/messages ]; then
+            tail -n 200 /run/log/messages > /data/log/last-messages.log 2>/dev/null || true
+        fi
+        killall klogd 2>/dev/null || true
+        killall syslogd 2>/dev/null || true
+        ;;
+esac
+

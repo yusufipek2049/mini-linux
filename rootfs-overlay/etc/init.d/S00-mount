@@ -1,0 +1,22 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        mount -t proc proc /proc 2>/dev/null || true
+        mount -t sysfs sysfs /sys 2>/dev/null || true
+        mount -t devtmpfs devtmpfs /dev 2>/dev/null || true
+        mount -t tmpfs -o mode=0755,size=32m tmpfs /run 2>/dev/null || true
+        mount -t tmpfs -o mode=1777,size=64m tmpfs /tmp 2>/dev/null || true
+
+        mkdir -p /run/log /run/lock /data /data/config /data/log /data/app /data/etc-overlay
+
+        if [ -b /dev/mmcblk0p4 ]; then
+            mount -t ext4 -o rw,noatime /dev/mmcblk0p4 /data 2>/dev/null || true
+        fi
+
+        ln -sfn /proc/mounts /etc/mtab 2>/dev/null || true
+        ;;
+    stop)
+        sync
+        ;;
+esac

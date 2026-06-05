@@ -1,0 +1,35 @@
+#!/bin/sh
+
+CONFIG=/data/config/network.conf
+[ -r "$CONFIG" ] && . "$CONFIG"
+
+MODE=${MODE:-dhcp}
+IFACE=${IFACE:-eth0}
+ADDRESS=${ADDRESS:-192.168.1.50}
+NETMASK=${NETMASK:-255.255.255.0}
+GATEWAY=${GATEWAY:-192.168.1.1}
+DNS=${DNS:-1.1.1.1}
+
+case "$1" in
+    start)
+        ip link set lo up 2>/dev/null || ifconfig lo up 2>/dev/null || true
+
+        if ip link show "$IFACE" >/dev/null 2>&1 || ifconfig "$IFACE" >/dev/null 2>&1; then
+            ip link set "$IFACE" up 2>/dev/null || ifconfig "$IFACE" up 2>/dev/null || true
+
+            if [ "$MODE" = "static" ]; then
+                ifconfig "$IFACE" "$ADDRESS" netmask "$NETMASK" up
+                route add default gw "$GATEWAY" "$IFACE" 2>/dev/null || true
+                echo "nameserver $DNS" > /etc/resolv.conf
+            else
+                udhcpc -i "$IFACE" -q -b -s /usr/share/udhcpc/default.script 2>/dev/null || true
+            fi
+        else
+            logger -t network "interface $IFACE not found"
+        fi
+        ;;
+    stop)
+        ip link set "$IFACE" down 2>/dev/null || ifconfig "$IFACE" down 2>/dev/null || true
+        ;;
+esac
+

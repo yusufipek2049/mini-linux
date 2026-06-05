@@ -1,0 +1,13 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+echo "mini-linux: stopping services"
+
+for script in /etc/init.d/S*; do
+    [ -x "$script" ] || continue
+    "$script" stop 2>/dev/null || true
+done
+
+sync
+

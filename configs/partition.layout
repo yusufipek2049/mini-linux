@@ -1,0 +1,8 @@
+# Example eMMC partition layout for the target device.
+#
+# Device         Name      Size    FS        Purpose
+/dev/mmcblk0p1   boot      32M     ext4      Kernel, DTB, U-Boot/extlinux config
+/dev/mmcblk0p2   rootfs_a  160M    squashfs  System slot A
+/dev/mmcblk0p3   rootfs_b  160M    squashfs  System slot B
+/dev/mmcblk0p4   data      rest    ext4      Persistent config, logs, app data
+

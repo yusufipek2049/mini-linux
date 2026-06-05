@@ -1,0 +1,10 @@
+proc        /proc    proc      defaults              0 0
+sysfs       /sys     sysfs     defaults              0 0
+devtmpfs    /dev     devtmpfs  mode=0755             0 0
+tmpfs       /run     tmpfs     mode=0755,size=32m    0 0
+tmpfs       /tmp     tmpfs     mode=1777,size=64m    0 0
+/dev/mmcblk0p4 /data ext4      rw,noatime            0 2
+
+# Optional writable /etc overlay. Enable only after /data is mounted.
+# overlay /etc overlay lowerdir=/etc,upperdir=/data/etc-overlay/upper,workdir=/data/etc-overlay/work 0 0
+

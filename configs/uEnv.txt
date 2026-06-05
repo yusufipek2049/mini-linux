@@ -1,0 +1,8 @@
+active_slot=a
+bootlimit=3
+bootcount=0
+upgrade_available=0
+rootfs_a=/dev/mmcblk0p2
+rootfs_b=/dev/mmcblk0p3
+data_part=/dev/mmcblk0p4
+
